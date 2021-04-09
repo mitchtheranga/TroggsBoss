@@ -5,7 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import troggsboss.Mobs.GatterGoons.SnoozedGoon.SnoozedGoon;
+import troggsboss.Mobs.Gatter.GatterBoss.GatterBoss;
+import troggsboss.Mobs.Gatter.SnoozedGoon.SnoozedGoon;
 
 public class GatterStart {
 
@@ -21,14 +22,17 @@ public class GatterStart {
         Location l2 = new Location(middleLoc.getWorld(), middleLoc.getX()-8, middleLoc.getY()+0.5, middleLoc.getZ());
         Location l3 = new Location(middleLoc.getWorld(), middleLoc.getX(), middleLoc.getY()+0.5, middleLoc.getZ()+8);
         Location l4 = new Location(middleLoc.getWorld(), middleLoc.getX(), middleLoc.getY()+0.5, middleLoc.getZ()-8);
-        SnoozedGoon g1 = new SnoozedGoon(l1);
-        SnoozedGoon g2 = new SnoozedGoon(l2);
-        SnoozedGoon g3 = new SnoozedGoon(l3);
-        SnoozedGoon g4 = new SnoozedGoon(l4);
-        world.addEntity(g1);
-        world.addEntity(g2);
-        world.addEntity(g3);
-        world.addEntity(g4);
+        Location gatterStartLoc = new Location(middleLoc.getWorld(), middleLoc.getX(), middleLoc.getY() + 3     , middleLoc.getZ());
+        SnoozedGoon sG1 = new SnoozedGoon(l1);
+        SnoozedGoon sG2 = new SnoozedGoon(l2);
+        SnoozedGoon sG3 = new SnoozedGoon(l3);
+        SnoozedGoon sG4 = new SnoozedGoon(l4);
+        GatterBoss gatter = new GatterBoss(gatterStartLoc);
+        world.addEntity(sG1);
+        world.addEntity(sG2);
+        world.addEntity(sG3);
+        world.addEntity(sG4);
+        world.addEntity(gatter);
     }
 
 }

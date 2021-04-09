@@ -7,8 +7,8 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import troggsboss.Mobs.GatterGoons.GoonSkeleton;
-import troggsboss.Mobs.GatterGoons.GoonStray;
+import troggsboss.Mobs.Gatter.GoonSkeleton;
+import troggsboss.Mobs.Gatter.GoonStray;
 
 public class SpawnMobEvents implements Listener {
     public final Main plugin;

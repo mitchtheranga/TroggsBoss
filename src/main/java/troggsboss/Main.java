@@ -2,7 +2,8 @@ package troggsboss;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import troggsboss.Bosses.SpawnBossCommand;
-import troggsboss.Mobs.GatterGoons.SnoozedGoon.SnoozedGoonEvents;
+import troggsboss.Mobs.Gatter.GatterBoss.GatterEvents;
+import troggsboss.Mobs.Gatter.SnoozedGoon.SnoozedGoonEvents;
 
 public final class Main extends JavaPlugin {
 
@@ -14,6 +15,7 @@ public final class Main extends JavaPlugin {
         getCommand("boss").setExecutor(new SpawnBossCommand());
         new SnoozedGoonEvents(this);
         new SpawnMobEvents(this);
+        new GatterEvents(this);
     }
 
     @Override
