@@ -28,43 +28,48 @@ public class SnoozedGoonEvents implements Listener {
 
     @EventHandler
     public void onHit(EntityDamageByEntityEvent e){
-        if(e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&5Resting Body"))){
-            if(e.getDamager().getType().equals(EntityType.PLAYER)){
-                e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
-                ((LivingEntity)e.getEntity()).setAI(true);
-                e.setDamage(1);
-            }else{
-                if(e.getDamager() instanceof Arrow){
+        try {
+            if (e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&5Resting Body"))) {
+                if (e.getDamager().getType().equals(EntityType.PLAYER)) {
+                    e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
+                    ((LivingEntity) e.getEntity()).setAI(true);
+                    e.setDamage(1);
+                } else {
+                    if (e.getDamager() instanceof Arrow) {
+                        Arrow arrow = (Arrow) e.getDamager();
+                        if (arrow.getShooter() instanceof Player) {
+                            e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
+                            ((LivingEntity) e.getEntity()).setAI(true);
+                            e.setDamage(1);
+                        }
+                    }
+                    if (e.getDamager() instanceof Trident) {
+                        Trident arrow = (Trident) e.getDamager();
+                        if (arrow.getShooter() instanceof Player) {
+                            e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
+                            ((LivingEntity) e.getEntity()).setAI(true);
+                            e.setDamage(1);
+                        }
+                    }
+                }
+            }
+            if (e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&cWoke Body"))) {
+                if (e.getDamager() instanceof Arrow) {
                     Arrow arrow = (Arrow) e.getDamager();
-                    if(arrow.getShooter() instanceof Player) {
-                        e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
-                        ((LivingEntity) e.getEntity()).setAI(true);
-                        e.setDamage(1);
+                    if (!(arrow.getShooter() instanceof Player)) {
+                        e.setCancelled(true);
                     }
                 }
-                if(e.getDamager() instanceof Trident) {
+                if (e.getDamager() instanceof Trident) {
                     Trident arrow = (Trident) e.getDamager();
-                    if (arrow.getShooter() instanceof Player) {
-                        e.getEntity().setCustomName(Utils.chat("&cWoke Body"));
-                        ((LivingEntity) e.getEntity()).setAI(true);
-                        e.setDamage(1);
+                    if (!(arrow.getShooter() instanceof Player)) {
+                        e.setCancelled(true);
                     }
                 }
+
             }
-        }
-        if(e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&cWoke Body"))){
-            if(e.getDamager() instanceof Arrow){
-                Arrow arrow = (Arrow) e.getDamager();
-                if(!(arrow.getShooter() instanceof Player)) {
-                    e.setCancelled(true);
-                }
-            }
-            if(e.getDamager() instanceof Trident) {
-                Trident arrow = (Trident) e.getDamager();
-                if(!(arrow.getShooter() instanceof Player)) {
-                    e.setCancelled(true);
-                }
-            }
+        } catch (Exception exception) {
+
         }
     }
 
@@ -73,7 +78,6 @@ public class SnoozedGoonEvents implements Listener {
         Entity entity = e.getEntity();
         if(entity.getCustomName().equalsIgnoreCase(Utils.chat("&cWoke Body")) || entity.getCustomName().equalsIgnoreCase(Utils.chat("&5Resting Body"))){
             if(Utils.getRandomInt(2) == 0){
-                Bukkit.broadcastMessage("drop");
                 ItemStack item = new ItemStack(Material.WITHER_ROSE);
                 ItemMeta meta = item.getItemMeta();
                 meta.addEnchant(Enchantment.DIG_SPEED, 1, true);

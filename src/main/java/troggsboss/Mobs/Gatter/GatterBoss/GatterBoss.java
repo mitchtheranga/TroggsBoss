@@ -10,6 +10,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
 import troggsboss.Utils;
 
 public class GatterBoss extends EntitySkeletonWither {
@@ -38,9 +39,13 @@ public class GatterBoss extends EntitySkeletonWither {
         LeatherArmorMeta legsM = (LeatherArmorMeta) legs.getItemMeta();
         LeatherArmorMeta bootsM = (LeatherArmorMeta) boots.getItemMeta();
         helmM.setColor(Color.BLACK);
+        helmM.setUnbreakable(true);
         chestM.setColor(Color.BLACK);
+        chestM.setUnbreakable(true);
         legsM.setColor(Color.BLACK);
+        legsM.setUnbreakable(true);
         bootsM.setColor(Color.BLACK);
+        bootsM.setUnbreakable(true);
         helm.setItemMeta(helmM);
         chest.setItemMeta(chestM);
         legs.setItemMeta(legsM);
@@ -49,5 +54,6 @@ public class GatterBoss extends EntitySkeletonWither {
         this.setSlot(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(chest));
         this.setSlot(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(legs));
         this.setSlot(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(boots));
+        this.addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 1000000, 0, true, true));
     }
 }

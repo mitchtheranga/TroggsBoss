@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -22,9 +23,7 @@ public class Events implements Listener {
     public void itemDrop(EntityDeathEvent e){
         if(e.getEntity().getCustomName().contains(Utils.chat("&7Soul Groper"))){
             e.getDrops().clear();
-            Bukkit.broadcastMessage("grope");
             if(Utils.getRandomInt(4) == 0){
-                Bukkit.broadcastMessage("drop");
                 ItemStack item = new ItemStack(Material.WITHER_ROSE, 1);
                 ItemMeta meta = item.getItemMeta();
                 meta.setDisplayName(Utils.chat("&8Gropers Rose"));
@@ -32,5 +31,10 @@ public class Events implements Listener {
                 e.getDrops().add(item);
             }
         }
+    }
+
+    @EventHandler
+    public void arrowLand(ProjectileHitEvent e){
+        e.getEntity().remove();
     }
 }
