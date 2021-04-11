@@ -23,12 +23,14 @@ public class RegularGoonEvents implements Listener {
 
     @EventHandler
     public void onDeath(EntityDeathEvent e){
-        if(e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&7Gatter Goon"))){
-            if(GatterHandler.phase == 2) {
-                GatterHandler.goonsLeftF2 -= 1;
-                GatterHandler.goonKilled();
-                Bukkit.broadcastMessage(String.valueOf(GatterHandler.goonsLeftF2));
+        try {
+            if (e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&7Gatter Goon"))) {
+                if (GatterHandler.phase == 2) {
+                    GatterHandler.goonsLeftF2 -= 1;
+                    GatterHandler.goonKilled();
+                }
             }
+        } catch (Exception exception) {
         }
     }
 

@@ -1,9 +1,13 @@
 package troggsboss.Bosses;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import troggsboss.Bosses.Gatter.GatterStart;
 import troggsboss.Utils;
 
@@ -23,6 +27,29 @@ public class SpawnBossCommand implements CommandExecutor {
             }
             if(args[0].equalsIgnoreCase("gatter")){
                 new GatterStart();
+                if(args.length > 1){
+                    if (args[1].equalsIgnoreCase("gear")) {
+                        ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
+                        ItemMeta meta = sword.getItemMeta();
+                        meta.addEnchant(Enchantment.DAMAGE_UNDEAD, 5, true);
+                        meta.setUnbreakable(true);
+                        sword.setItemMeta(meta);
+                        ItemStack armor = new ItemStack(Material.NETHERITE_HELMET);
+                        ItemMeta aMeta = armor.getItemMeta();
+                        aMeta.addEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, 4, true);
+                        aMeta.setUnbreakable(true);
+                        armor.setItemMeta(aMeta);
+                        Player player = (Player) sender;
+                        player.getInventory().addItem(sword);
+                        player.getInventory().addItem(armor);
+                        armor.setType(Material.NETHERITE_CHESTPLATE);
+                        player.getInventory().addItem(armor);
+                        armor.setType(Material.NETHERITE_LEGGINGS);
+                        player.getInventory().addItem(armor);
+                        armor.setType(Material.NETHERITE_BOOTS);
+                        player.getInventory().addItem(armor);
+                    }
+                }
             }
         }
         return false;

@@ -56,4 +56,5 @@ public class GatterBoss extends EntitySkeletonWither {
         this.setSlot(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(boots));
         this.addEffect(new MobEffect(MobEffects.FASTER_MOVEMENT, 1000000, 0, true, true));
     }
+
 }
