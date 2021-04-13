@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import troggsboss.Bosses.Gatter.GatterHandler;
 import troggsboss.Main;
 import troggsboss.Utils;
@@ -27,6 +28,14 @@ public class RegularGoonEvents implements Listener {
             if (e.getEntity().getCustomName().equalsIgnoreCase(Utils.chat("&7Gatter Goon"))) {
                 if (GatterHandler.phase == 2) {
                     GatterHandler.goonsLeftF2 -= 1;
+                    GatterHandler.goonKilled();
+                }
+                if (GatterHandler.phase == 4) {
+                    GatterHandler.goonsLeftF4 -= 1;
+                    GatterHandler.goonKilled();
+                }
+                if (GatterHandler.phase == 6) {
+                    GatterHandler.goonsLeftF6 -= 1;
                     GatterHandler.goonKilled();
                 }
             }
@@ -53,5 +62,10 @@ public class RegularGoonEvents implements Listener {
             }
         } catch (Exception exception) {
         }
+    }
+
+    @EventHandler
+    public void mobDespawn(ItemDespawnEvent e){
+
     }
 }

@@ -29,6 +29,9 @@ public class GatterBoss extends EntitySkeletonWither {
         }
         org.bukkit.inventory.ItemStack sword;
         sword = new ItemStack(Material.NETHERITE_HOE);
+        ItemMeta swordM = sword.getItemMeta();
+        swordM.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
+        sword.setItemMeta(swordM);
         this.setSlot(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(sword));
         ItemStack helm = new ItemStack(Material.LEATHER_HELMET);
         ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);

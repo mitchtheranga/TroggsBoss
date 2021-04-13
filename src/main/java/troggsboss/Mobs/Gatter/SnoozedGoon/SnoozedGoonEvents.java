@@ -76,24 +76,27 @@ public class SnoozedGoonEvents implements Listener {
     @EventHandler
     public void onDeath(EntityDeathEvent e){
         Entity entity = e.getEntity();
-        if(entity.getCustomName().equalsIgnoreCase(Utils.chat("&cWoke Body")) || entity.getCustomName().equalsIgnoreCase(Utils.chat("&5Resting Body"))){
-            if(Utils.getRandomInt(2) == 0){
-                ItemStack item = new ItemStack(Material.WITHER_ROSE);
-                ItemMeta meta = item.getItemMeta();
-                meta.addEnchant(Enchantment.DIG_SPEED, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                meta.setDisplayName(Utils.chat("&8Soul of the Asleep"));
-                List<String> lore = new ArrayList<>();
-                lore.add(Utils.chat("&7The soul of the asleep"));
-                lore.add(Utils.chat("&7in its pure flower form."));
-                meta.setLore(lore);
-                item.setItemMeta(meta);
-                entity.getWorld().dropItem(entity.getLocation(), item);
+        try {
+            if (entity.getCustomName().equalsIgnoreCase(Utils.chat("&cWoke Body")) || entity.getCustomName().equalsIgnoreCase(Utils.chat("&5Resting Body"))) {
+                if (Utils.getRandomInt(2) == 0) {
+                    ItemStack item = new ItemStack(Material.WITHER_ROSE);
+                    ItemMeta meta = item.getItemMeta();
+                    meta.addEnchant(Enchantment.DIG_SPEED, 1, true);
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    meta.setDisplayName(Utils.chat("&8Soul of the Asleep"));
+                    List<String> lore = new ArrayList<>();
+                    lore.add(Utils.chat("&7The soul of the asleep"));
+                    lore.add(Utils.chat("&7in its pure flower form."));
+                    meta.setLore(lore);
+                    item.setItemMeta(meta);
+                    entity.getWorld().dropItem(entity.getLocation(), item);
+                }
+                e.getDrops().clear();
             }
-            e.getDrops().clear();
-        }
-        if(entity.getCustomName().equalsIgnoreCase(Utils.chat("&7Gatter Goon"))){
-            e.getDrops().clear();
+            if (entity.getCustomName().equalsIgnoreCase(Utils.chat("&7Gatter Goon"))) {
+                e.getDrops().clear();
+            }
+        } catch (Exception exception) {
         }
     }
 }

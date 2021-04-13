@@ -65,7 +65,7 @@ public class SpawnmobCommand implements CommandExecutor {
                 }
             }
             if(args[0].equalsIgnoreCase("gatter_boss")){
-                if(GatterHandler.gatter == null){
+                if(GatterHandler.gatter != null){
                     Bukkit.broadcastMessage("You can not have more than gatter at a time!");
                     return true;
                 }

@@ -10,19 +10,19 @@ import troggsboss.Mobs.Gatter.SnoozedGoon.SnoozedGoon;
 
 public class GatterStart {
 
-    public GatterStart(){
-        World world = Bukkit.getWorld("world");
-        Location bossLoc = new Location(world, 8.5, 53, 8.5);
+    public GatterStart(World world){
+        Location bossLoc = new Location(world, 0.5, 100, 0.5);
+        GatterHandler.gatterMiddle = new Location(world, 0.5, 103, 0.5, 0, 0);
         spawnSnoozed(bossLoc);
         spawnGatter(bossLoc);
     }
 
     public void spawnSnoozed(Location middleLoc){
         WorldServer world = ((CraftWorld) middleLoc.getWorld()).getHandle();
-        Location l1 = new Location(middleLoc.getWorld(), middleLoc.getX()+8, middleLoc.getY()+0.5, middleLoc.getZ());
-        Location l2 = new Location(middleLoc.getWorld(), middleLoc.getX()-8, middleLoc.getY()+0.5, middleLoc.getZ());
-        Location l3 = new Location(middleLoc.getWorld(), middleLoc.getX(), middleLoc.getY()+0.5, middleLoc.getZ()+8);
-        Location l4 = new Location(middleLoc.getWorld(), middleLoc.getX(), middleLoc.getY()+0.5, middleLoc.getZ()-8);
+        Location l1 = new Location(middleLoc.getWorld(), middleLoc.getX()+22, middleLoc.getY()+7, middleLoc.getZ()-22);
+        Location l2 = new Location(middleLoc.getWorld(), middleLoc.getX()+22, middleLoc.getY()+7, middleLoc.getZ()+22);
+        Location l3 = new Location(middleLoc.getWorld(), middleLoc.getX()-22, middleLoc.getY()+7, middleLoc.getZ()+22);
+        Location l4 = new Location(middleLoc.getWorld(), middleLoc.getX()-22, middleLoc.getY()+7, middleLoc.getZ()-22);
         SnoozedGoon sG1 = new SnoozedGoon(l1);
         SnoozedGoon sG2 = new SnoozedGoon(l2);
         SnoozedGoon sG3 = new SnoozedGoon(l3);

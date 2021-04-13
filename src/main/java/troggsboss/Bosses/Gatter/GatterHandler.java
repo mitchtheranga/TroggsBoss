@@ -3,31 +3,23 @@ package troggsboss.Bosses.Gatter;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R3.ChatComponentText;
-import net.minecraft.server.v1_16_R3.IChatBaseComponent;
 import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.BoundingBox;
+import org.bukkit.util.Vector;
 import troggsboss.Main;
+import troggsboss.Mobs.Gatter.*;
 import troggsboss.Mobs.Gatter.GatterBoss.GatterBoss;
-import troggsboss.Mobs.Gatter.GoonSkeleton;
-import troggsboss.Mobs.Gatter.GoonSkeletonStrength;
-import troggsboss.Mobs.Gatter.GoonStray;
-import troggsboss.Mobs.Gatter.GoonStrayStrength;
+import troggsboss.Mobs.Gatter.GatterBoss.WitherShieldMob;
 import troggsboss.Utils;
 
 import java.util.ArrayList;
@@ -40,6 +32,11 @@ public class GatterHandler {
     public static int maxHealth;
     public static boolean lightningLastAttack = false;
     public static int goonsLeftF2, goonsLeftF4, goonsLeftF6;
+    public static BoundingBox box = new BoundingBox(-55, 115, -55, 55, 80, 55);
+    public static Location gatterMiddle;
+    public static List<Block> witherBlocks = new ArrayList<>();
+    public static List<Entity> gatterShield = new ArrayList<>();
+    public static List<Integer> noAttackPhases = new ArrayList<>();
 
     public static void newGatter(GatterBoss boss){
         gatter = (LivingEntity) boss.getBukkitEntity();
@@ -51,44 +48,14 @@ public class GatterHandler {
         nameFF = nameFF.replace(" ", "");
         currentHealth = Integer.parseInt(nameFF.split("/")[0]);
         maxHealth = Integer.parseInt(nameFF.split("/")[1]);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
                 phaseCheck();
             }
         }, 300L);
         updateActionBar();
-    }
-
-    public static void gatterHit(){
-        if(currentHealth > 3000){
-            phase1();
-            return;
-        }
-        if(currentHealth == 3000 && phase == 1){
-            phase2();
-            return;
-        }
-        if(currentHealth > 2000){
-            phase3();
-            return;
-        }
-        if(currentHealth == 2000 && phase != 5){
-            phase4();
-            return;
-        }
-        if(currentHealth > 1000){
-            phase5();
-            return;
-        }
-        if(currentHealth == 1000 && phase != 7){
-            phase6();
-            return;
-        }
-        if(currentHealth > 0){
-            phase7();
-            return;
-        }
+        phase1();
     }
 
     public static void phaseCheck(){
@@ -103,7 +70,7 @@ public class GatterHandler {
         if(phase == 1){
             int attacknumb = Utils.getRandomInt(5);
             if(attacknumb == 1 && !lightningLastAttack) {
-                lightningAttack(3);
+                lightningAttack(5);
             }else{
                 lightningLastAttack = false;
             }
@@ -111,7 +78,7 @@ public class GatterHandler {
         if(phase == 3){
             int attacknumb = Utils.getRandomInt(5);
             if(attacknumb == 1 && !lightningLastAttack) {
-                lightningAttack(5);
+                lightningAttack(7);
             }else{
                 lightningLastAttack = false;
             }
@@ -120,58 +87,38 @@ public class GatterHandler {
             }
         }
         if(phase == 5){
-            int attacknumb = Utils.getRandomInt(10);
-            if(attacknumb == 1 && !lightningLastAttack) {
-                lightningAttack(7);
+            int attacknumb = Utils.getRandomInt(15);
+            if(attacknumb < 3 && !lightningLastAttack) {
+                lightningAttack(9);
             }else{
                 lightningLastAttack = false;
             }
-            if(attacknumb >= 2 && attacknumb <= 7) {
+            if(attacknumb >= 5 && attacknumb <= 8) {
                 witherBombAttack();
             }
-            if(attacknumb > 8) {
-                gatter.setAI(false);
-                Location gatterLoc = gatter.getLocation();
-                gatter.teleport(new Location(gatter.getWorld(), 8.5, 56, 8.5));
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.broadcastMessage(Utils.chat("&8&lGatter&7: &cYOU CAN HIDE BUT YOU CANT HEAL!"));
-                    }
-                }, 30L);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.broadcastMessage(Utils.chat("&8&lGatter&7: &cFEEL THE CORRUPT DAMAGE OF MY WITHER BOMBS!"));
-                    }
-                }, 70L);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
-                            if (block.getType().equals(Material.CRIMSON_NYLIUM)) {
-                                if(Utils.getRandomInt(3) == 1){
-                                    block.setType(Material.BLACKSTONE);
-                                }
-                            }
-                        }
-                        witherBombDamage();
-                    }
-                }, 110L);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        gatter.teleport(gatterLoc);
-                        gatter.setAI(true);
-                    }
-                }, 135L);
+            if(attacknumb > 11) {
+                witherShield();
             }
         }
+        if(phase == 7){
+            int attacknumb = Utils.getRandomInt(15);
+            if(attacknumb < 3 && !lightningLastAttack) {
+                lightningAttack(12);
+            }else{
+                lightningLastAttack = false;
+            }
+            if(attacknumb >= 5 && attacknumb <= 8) {
+                witherBombAttack();
+            }
+            if(attacknumb > 11 && attacknumb <= 13) {
+                witherShield();
+            }
+        }
+
     }
 
     public static void goonKilled(){
         if(goonsLeftF2 <= 0 && phase == 2){
-
             phase3();
             return;
         }
@@ -189,18 +136,17 @@ public class GatterHandler {
         phase = 1;
         gatter.setInvulnerable(false);
     }
-
     public static void phase2(){
         gatter.setAI(false);
-        gatter.teleport(new Location(gatter.getWorld(), 8.5, 56, 8.5, 0, 0));
+        gatter.teleport(gatterMiddle);
         phase = 2;
         gatter.setInvulnerable(true);
         goonsLeftF2 = 0;
-        while(goonsLeftF2 < 50) {
-            for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
+        while(goonsLeftF2 < 5) {
+            for (Block block : witherBlocks) {
                 if(block.getType().equals(Material.CRIMSON_NYLIUM)) {
-                    if (Utils.getRandomInt(24) == 1) {
-                        if (goonsLeftF2 < 50) {
+                    if (Utils.getRandomInt(50) == 1) {
+                        if (goonsLeftF2 < 5) {
                             WorldServer world = ((CraftWorld) gatter.getWorld()).getHandle();
                             Location loc = new Location(block.getWorld(), block.getX() + .5, block.getY() + 1, block.getZ() + .5);
                             Location loc2 = new Location(block.getWorld(), block.getX() + .5, block.getY() + 2, block.getZ() + .5);
@@ -220,31 +166,34 @@ public class GatterHandler {
             }
         }
     }
-
     public static void phase3(){
         lightningLastAttack = false;
         phase = 3;
         gatter.setInvulnerable(false);
         gatter.setAI(true);
         gatter.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1000000, 4, false, false));
+        ItemStack item = new org.bukkit.inventory.ItemStack(Material.NETHERITE_HOE);
+        ItemMeta meta = item.getItemMeta();
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 8, true);
+        item.setItemMeta(meta);
+        gatter.getEquipment().setItemInMainHand(item);
     }
-
     public static void phase4(){
         phase = 4;
         gatter.setInvulnerable(true);
-        for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
+        for (Block block : witherBlocks) {
             if (block.getType().equals(Material.BLACKSTONE)) {
                 block.setType(Material.CRIMSON_NYLIUM);
             }
         }
         gatter.setAI(false);
-        gatter.teleport(new Location(gatter.getWorld(), 8.5, 56, 8.5, 0, 0));
+        gatter.teleport(gatterMiddle);
         goonsLeftF4 = 0;
-        while(goonsLeftF4 < 100) {
-            for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
+        while(goonsLeftF4 < 7) {
+            for (Block block : witherBlocks) {
                 if(block.getType().equals(Material.CRIMSON_NYLIUM)) {
-                    if (Utils.getRandomInt(12) == 1) {
-                        if (goonsLeftF4 < 100) {
+                    if (Utils.getRandomInt(40) == 1) {
+                        if (goonsLeftF4 < 7) {
                             WorldServer world = ((CraftWorld) gatter.getWorld()).getHandle();
                             Location loc = new Location(block.getWorld(), block.getX() + .5, block.getY() + 1, block.getZ() + .5);
                             Location loc2 = new Location(block.getWorld(), block.getX() + .5, block.getY() + 2, block.getZ() + .5);
@@ -263,7 +212,6 @@ public class GatterHandler {
                 }
             }
         }
-
     }
     public static void phase5(){
         phase = 5;
@@ -273,22 +221,57 @@ public class GatterHandler {
         ItemStack item = new org.bukkit.inventory.ItemStack(Material.NETHERITE_HOE);
         ItemMeta meta = item.getItemMeta();
         meta.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
-        meta.addEnchant(Enchantment.DAMAGE_ALL, 2, true);
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 10, true);
         item.setItemMeta(meta);
         gatter.getEquipment().setItemInMainHand(item);
     }
     public static void phase6(){
         phase = 6;
         gatter.setInvulnerable(true);
-        for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
+        for (Block block : witherBlocks) {
             if (block.getType().equals(Material.BLACKSTONE)) {
                 block.setType(Material.CRIMSON_NYLIUM);
+            }
+        }
+        gatter.setAI(false);
+        gatter.teleport(gatterMiddle);
+        goonsLeftF6 = 0;
+        while(goonsLeftF6 < 12) {
+            for (Block block : witherBlocks) {
+                if(block.getType().equals(Material.CRIMSON_NYLIUM)) {
+                    if (Utils.getRandomInt(30) == 1) {
+                        if (goonsLeftF6 < 12) {
+                            WorldServer world = ((CraftWorld) gatter.getWorld()).getHandle();
+                            Location loc = new Location(block.getWorld(), block.getX() + .5, block.getY() + 1, block.getZ() + .5);
+                            Location loc2 = new Location(block.getWorld(), block.getX() + .5, block.getY() + 2, block.getZ() + .5);
+                            if(loc.getBlock().getType().equals(Material.AIR) && loc2.getBlock().getType().equals(Material.AIR)) {
+                                if (Utils.getRandomInt(2) == 1) {
+                                    GoonSkeletonStrengthHealth goon = new GoonSkeletonStrengthHealth(loc);
+                                    world.addEntity(goon);
+                                } else {
+                                    GoonStrayStrengthHealth goon = new GoonStrayStrengthHealth(loc);
+                                    world.addEntity(goon);
+                                }
+                                goonsLeftF6 += 1;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
     public static void phase7(){
         phase = 7;
         gatter.setInvulnerable(false);
+        gatter.setAI(true);
+        gatter.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1000000, 6, false, false));
+        ItemStack item = new org.bukkit.inventory.ItemStack(Material.NETHERITE_SWORD);
+        ItemMeta meta = item.getItemMeta();
+        meta.addEnchant(Enchantment.FIRE_ASPECT, 2, true);
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 10, true);
+        item.setItemMeta(meta);
+        gatter.getEquipment().setItemInMainHand(item);
+        splatCheck();
     }
 
     public static void damageGatter(int amount) {
@@ -303,34 +286,6 @@ public class GatterHandler {
         String newName = Utils.chat("&8&lGatter &7[&f" + GatterHandler.currentHealth + "&7/&f" + GatterHandler.maxHealth + "&7]");
         gatter.setCustomName(newName);
     }
-
-    public static void witherBombDamage(){
-        BoundingBox box = new BoundingBox(-23, 73, -23, 23, 40, 23);
-        for(Entity entity : gatter.getWorld().getNearbyEntities(box)){
-            if(entity.getType().equals(EntityType.PLAYER)){
-                Block block = new Location(entity.getLocation().getWorld(), entity.getLocation().getX(), entity.getLocation().getY() - 1, entity.getLocation().getZ()).getBlock();
-                if(block.getType().toString().equalsIgnoreCase("BLACKSTONE")){
-                    if(phase == 3) {
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 3));
-                    }else if(phase == 5) {
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 5));
-                    }
-                    else if(phase == 7) {
-                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 7));
-                    }
-                }
-            }
-        }
-        if((phase == 3 || phase == 5 || phase == 7) && !gatter.isDead()){
-            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
-                @Override
-                public void run() {
-                    witherBombDamage();
-                }
-            }, 20L);
-        }
-    }
-
     public static void changeGatterColor(Color color){
         ItemStack helm = new ItemStack(Material.LEATHER_HELMET);
         ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
@@ -393,7 +348,7 @@ public class GatterHandler {
     public static void lightningAttack(int damage){
         lightningLastAttack = true;
         gatter.setAI(false);
-        gatter.teleport(new Location(gatter.getWorld(), 8.5, 56, 8.5));
+        gatter.teleport(gatterMiddle);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
@@ -411,7 +366,7 @@ public class GatterHandler {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
-                BoundingBox box = new BoundingBox(-23, 73, -23, 23, 40, 23);
+                BoundingBox box = GatterHandler.box;
                 changeGatterColor(Color.fromRGB(0, 229, 255));
                 for (Entity entity : gatter.getWorld().getNearbyEntities(box)) {
                     if (entity.getType().equals(EntityType.PLAYER)) {
@@ -425,40 +380,40 @@ public class GatterHandler {
             }
 
         }, 110L);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
                 changeGatterColor(Color.fromRGB(0, 229, 255));
                 gatter.setGlowing(true);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
                     @Override
                     public void run() {
                         changeGatterColor(Color.fromRGB(0, 0, 0));
                         gatter.setGlowing(false);
                     }
                 }, 5L);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
                     @Override
                     public void run() {
                         changeGatterColor(Color.fromRGB(0, 229, 255));
                         gatter.setGlowing(true);
                     }
                 }, 10L);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
                     @Override
                     public void run() {
                         changeGatterColor(Color.fromRGB(0, 0, 0));
                         gatter.setGlowing(false);
                     }
                 }, 15L);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
                     @Override
                     public void run() {
                         changeGatterColor(Color.fromRGB(0, 229, 255));
                         gatter.setGlowing(true);
                     }
                 }, 20L);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
                     @Override
                     public void run() {
                         changeGatterColor(Color.fromRGB(0, 0, 0));
@@ -471,7 +426,7 @@ public class GatterHandler {
             @Override
             public void run() {
                 List<Entity> playersInBoss = new ArrayList<>();
-                BoundingBox box = new BoundingBox(-23, 73, -23, 23, 40, 23);
+                BoundingBox box = GatterHandler.box;
                 for(Entity e : gatter.getWorld().getNearbyEntities(box)){
                     if(e.getType().equals(EntityType.PLAYER)){
                         playersInBoss.add(e);
@@ -484,14 +439,14 @@ public class GatterHandler {
     }
     public static void witherBombAttack(){
         gatter.setAI(false);
-        gatter.teleport(new Location(gatter.getWorld(), 8.5, 56, 8.5));
+        gatter.teleport(gatterMiddle);
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
                 Bukkit.broadcastMessage(Utils.chat("&8&lGatter&7: &cYOU CAN HIDE BUT YOU CANT HEAL!"));
             }
         }, 30L);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(Main.plugin, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
                 Bukkit.broadcastMessage(Utils.chat("&8&lGatter&7: &cFEEL THE CORRUPT DAMAGE OF MY WITHER BOMBS!"));
@@ -500,7 +455,7 @@ public class GatterHandler {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
             @Override
             public void run() {
-                for (Block block : Utils.getNearbyBlocks(gatter.getLocation(), 50)) {
+                for (Block block : witherBlocks) {
                     if (block.getType().equals(Material.CRIMSON_NYLIUM)) {
                         if(Utils.getRandomInt(3) == 1){
                             block.setType(Material.BLACKSTONE);
@@ -514,7 +469,7 @@ public class GatterHandler {
             @Override
             public void run() {
                 List<Entity> playersInBoss = new ArrayList<>();
-                BoundingBox box = new BoundingBox(-23, 73, -23, 23, 40, 23);
+                BoundingBox box = GatterHandler.box;
                 for(Entity e : gatter.getWorld().getNearbyEntities(box)){
                     if(e.getType().equals(EntityType.PLAYER)){
                         playersInBoss.add(e);
@@ -525,19 +480,149 @@ public class GatterHandler {
             }
         }, 135L);
     }
+    public static void witherBombDamage(){
+        BoundingBox box = GatterHandler.box;
+        for(Entity entity : gatter.getWorld().getNearbyEntities(box)){
+            if(entity.getType().equals(EntityType.PLAYER)){
+                Block block = new Location(entity.getLocation().getWorld(), entity.getLocation().getX(), entity.getLocation().getY() - 1, entity.getLocation().getZ()).getBlock();
+                if(block.getType().toString().equalsIgnoreCase("BLACKSTONE")){
+                    if(phase == 3) {
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 3));
+                    }else if(phase == 5) {
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 5));
+                    }
+                    else if(phase == 7) {
+                        ((LivingEntity) entity).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 30, 7));
+                    }
+                }
+            }
+        }
+        if((phase == 3 || phase == 5 || phase == 7) && !gatter.isDead()){
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+                @Override
+                public void run() {
+                    witherBombDamage();
+                }
+            }, 20L);
+        }
+    }
+
+    public static void witherShield(){
+        gatter.setAI(false);
+        Location gatterLoc = gatter.getLocation();
+        gatter.teleport(gatterMiddle);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+            @Override
+            public void run() {
+                Bukkit.broadcastMessage(Utils.chat("&8&lGatter&7: &cTRY DAMAGING ME NOW THAT I HAVE A SOUL SHIELD!"));
+            }
+        }, 30L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+            @Override
+            public void run() {
+                WorldServer world = ((CraftWorld)gatter.getWorld()).getHandle();
+                Location l = new Location(gatter.getLocation().getWorld(), gatter.getLocation().getX(), gatter.getLocation().getY() + 1.5, gatter.getLocation().getZ());
+                WitherShieldMob s = new WitherShieldMob(l);
+                world.addEntity(s);
+                WitherShieldMob s1 = new WitherShieldMob(l);
+                world.addEntity(s1);
+                WitherShieldMob s2 = new WitherShieldMob(l);
+                world.addEntity(s2);
+                WitherShieldMob s3 = new WitherShieldMob(l);
+                world.addEntity(s3);
+                WitherShieldMob s4 = new WitherShieldMob(l);
+                world.addEntity(s4);
+                if(gatterShield.size() <= 0) {
+                    gatterShield.add(s.getBukkitEntity());
+                    witherShieldUpdate();
+                }else{
+                    gatterShield.add(s.getBukkitEntity());
+                }
+                gatterShield.add(s1.getBukkitEntity());
+                gatterShield.add(s2.getBukkitEntity());
+                gatterShield.add(s3.getBukkitEntity());
+                gatterShield.add(s4.getBukkitEntity());
+            }
+        }, 40L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+            @Override
+            public void run() {
+                List<Entity> playersInBoss = new ArrayList<>();
+                BoundingBox box = GatterHandler.box;
+                for(Entity e : gatter.getWorld().getNearbyEntities(box)){
+                    if(e.getType().equals(EntityType.PLAYER)){
+                        playersInBoss.add(e);
+                    }
+                }
+                gatter.teleport(playersInBoss.get(Utils.getRandomInt(playersInBoss.size())));
+                gatter.setAI(true);
+            }
+        }, 60L);
+    }
+    public static void witherShieldUpdate(){
+        int i = 0;
+        for(Entity e : gatterShield){
+            if(e.isDead()) {
+                gatterShield.remove(e);
+            }else {
+                Location l = new Location(gatter.getEyeLocation().getWorld(), gatter.getEyeLocation().getX(), gatter.getEyeLocation().getY() + .75 + (i * 0.5), gatter.getLocation().getZ(), gatter.getEyeLocation().getYaw(), 0);
+                e.teleport(l);
+            }
+            i += 1;
+        }
+        if(gatterShield.size() > 0 && !gatter.isDead()){
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+                @Override
+                public void run() {
+                    witherShieldUpdate();
+                }
+            }, 1L);
+        }
+    }
+
+    public static void splat(){
+        gatter.getWorld().playSound(gatter.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 10, 10);
+        for(Entity e : gatter.getNearbyEntities(5, 10, 5)){
+            if(e.getType().equals(EntityType.PLAYER)){
+                e.setVelocity(new Vector(e.getVelocity().getX(), 1.5, e.getVelocity().getZ()));
+                ((LivingEntity)e).addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 200, 2, true, false));
+                ((LivingEntity)e).addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 50, 6, true, false));
+                ((LivingEntity)e).addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 200, 3, true, false));
+            }
+        }
+    }
+    public static void splatCheck(){
+        int i = 0;
+        for(Entity e : gatter.getNearbyEntities(5, 10, 5)) {
+            if (e.getType().equals(EntityType.PLAYER)) {
+                i += 1;
+            }
+        }
+        if(i >= 1 && Utils.getRandomInt(4) == 1){
+            splat();
+        }
+        if(!gatter.isDead() && phase == 7){
+            Bukkit.getScheduler().scheduleSyncDelayedTask(Main.plugin, new Runnable() {
+                @Override
+                public void run() {
+                    splatCheck();
+                }
+            }, 100L);
+        }
+    }
 
     public static void updateActionBar(){
         String extras = "";
         if(phase == 2){
-            extras = Utils.chat(" &8| &4&lGoons Left: &c" + goonsLeftF2);
+            extras = Utils.chat(" &8&l| &4&lGoons Left: &c" + goonsLeftF2);
         }
         if(phase == 4){
-            extras = Utils.chat(" &8| &4&lGoons Left: &c" + goonsLeftF4);
+            extras = Utils.chat(" &8&l| &4&lGoons Left: &c" + goonsLeftF4);
         }
         if(phase == 6){
-            extras = Utils.chat(" &8| &4&/lGoons Left: &c" + goonsLeftF6);
+            extras = Utils.chat(" &8&l| &4&lGoons Left: &c" + goonsLeftF6);
         }
-        BoundingBox box = new BoundingBox(-23, 73, -23, 23, 40, 23);
+        BoundingBox box = GatterHandler.box;
         for(Entity e : gatter.getWorld().getNearbyEntities(box)) {
             if(e.getType().equals(EntityType.PLAYER)) {
                 Player player = (Player) e;
@@ -552,6 +637,25 @@ public class GatterHandler {
                     updateActionBar();
                 }
             }, 5L);
+        }
+    }
+
+    public static void main(String[] args) {
+        for(int i = 0; i <= 100; i++) {
+            System.out.println(Utils.getRandomInt(91));
+        }
+    }
+
+    public static void death(){
+        gatter.teleport(gatterMiddle);
+        phase = 8;
+        gatter.setInvulnerable(true);
+        gatter.setAI(false);
+        changeGatterColor(Color.WHITE);
+        for (Block block : witherBlocks) {
+            if (block.getType().equals(Material.BLACKSTONE)) {
+                block.setType(Material.CRIMSON_NYLIUM);
+            }
         }
     }
 }

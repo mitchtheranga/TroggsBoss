@@ -1,5 +1,6 @@
 package troggsboss.Bosses;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -8,6 +9,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import troggsboss.Bosses.Gatter.GatterHandler;
 import troggsboss.Bosses.Gatter.GatterStart;
 import troggsboss.Utils;
 
@@ -25,8 +27,17 @@ public class SpawnBossCommand implements CommandExecutor {
                 sender.sendMessage(Utils.chat("&cIncorrect Usage! Do /boss <Boss>."));
                 return true;
             }
+            if(args[0].equalsIgnoreCase("splat")){
+                GatterHandler.splat();
+            }
+            if(args[0].equalsIgnoreCase("phase")){
+                Bukkit.broadcastMessage(String.valueOf(GatterHandler.phase));
+            }
+            if(args[0].equalsIgnoreCase("headsonme")){
+
+            }
             if(args[0].equalsIgnoreCase("gatter")){
-                new GatterStart();
+                new GatterStart(((Player)sender).getWorld());
                 if(args.length > 1){
                     if (args[1].equalsIgnoreCase("gear")) {
                         ItemStack sword = new ItemStack(Material.NETHERITE_SWORD);
